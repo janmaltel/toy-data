@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 from torch import Tensor
+from toydata.data import ChoiceSetData
 
 
 def create_discrete_choice_data(num_choice_sets=100,
@@ -10,14 +11,10 @@ def create_discrete_choice_data(num_choice_sets=100,
                                 probabilistic=True,
                                 directed_weights=False,
                                 return_true_weights=False):
+    cs_data = ChoiceSetData(num_features=num_features)
 
-    """
-    Choice probabilities are softmaxed linear utility functions.
 
-    TODO: lots of asserts to validate args
-    """
-
-    beta = np.random.normal(loc=0, scale=9, size=num_features)
+    beta = np.random.normal(loc=0, scale=4, size=num_features)
     if directed_weights:
         beta = np.abs(beta)
     print("True beta", beta)
