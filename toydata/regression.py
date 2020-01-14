@@ -1,5 +1,12 @@
 import numpy as np
 
+""" 
+STUB
+
+# TODO 
+
+"""
+
 
 def create_regression_data(num_samples=100, num_features=3, return_true_weights=False):
     X = np.random.normal(size=(num_samples, num_features))

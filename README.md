@@ -1,3 +1,5 @@
 # toy-data
-Create toy data for linear or deep machine learning models. 
-Useful for sanity-checking implementations.
+Create toy data to sanity-check machine learning models. 
+Currently, only methods to create [discrete choice data](https://en.wikipedia.org/wiki/Discrete_choice) are implemented.
+
+
