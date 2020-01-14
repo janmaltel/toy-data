@@ -2,56 +2,31 @@ import numpy as np
 import torch
 from torch import Tensor
 from toydata.data import ChoiceSetData
+import warnings
 
 
 def create_discrete_choice_data(num_choice_sets=100,
-                                num_choices_per_set=5,
+                                num_alternatives_per_set=5,
                                 num_features=3,
                                 temperature=1,
+                                weight_means=0,
+                                weight_sds=3,
+                                feature_means=0,
+                                feature_sds=1,
                                 probabilistic=True,
-                                directed_weights=False,
-                                return_true_weights=False):
+                                directed_weights=False):
     cs_data = ChoiceSetData(num_features=num_features)
-
-
-    beta = np.random.normal(loc=0, scale=4, size=num_features)
-    if directed_weights:
-        beta = np.abs(beta)
-    print("True beta", beta)
-    features = np.random.normal(loc=0,
-                                scale=1,
-                                size=(num_choice_sets * num_choices_per_set, num_features))
-
-    # Initialize data set container
-    states = np.repeat(np.arange(num_choice_sets), num_choices_per_set)
-    choices = np.zeros(num_choice_sets * num_choices_per_set)
-    data = np.hstack((np.zeros((num_choice_sets * num_choices_per_set, 2)), features))
-    data[:, 0] = states
-
-    # Calculate linear scores
-    utilities = features.dot(beta)
-
-    # Sample "true" choices according on softmax of utilities (choice probabilities) for each choice set
-    for st in range(num_choice_sets):
-        ixs = np.where(states == st)[0]
-        utils_st = utilities[ixs]
-
-        if probabilistic:
-            utils_st = utils_st - np.max(utils_st)
-            exp_utils = np.exp(utils_st / temperature)
-            probs = exp_utils / np.sum(exp_utils)
-            # print(probs)
-            choice = np.random.choice(np.arange(num_choices_per_set), size=1, p=probs)
-            choices[ixs[choice]] = 1.0
-        else:
-            # Deterministic
-            choices[ixs[utils_st == np.max(utils_st)]] = 1.0
-    data[:, 1] = choices
-
-    if return_true_weights:
-        return data, beta
-    else:
-        return data
+    cs_data.simulate_data(num_choice_sets=num_choice_sets,
+                          num_alternatives_per_set=num_alternatives_per_set,
+                          temperature=temperature,
+                          weight_means=weight_means,
+                          weight_sds=weight_sds,
+                          feature_means=feature_means,
+                          feature_sds=feature_sds,
+                          probabilistic=probabilistic,
+                          directed_weights=directed_weights
+                          )
+    return cs_data
 
 
 def deep_discrete_choice_example_data(model=None,
@@ -61,8 +36,11 @@ def deep_discrete_choice_example_data(model=None,
                                       probabilistic=True,
                                       temperature=1):
     """
+    CURRENTLY NOT SUPPORTED. #TODO
+
     Choice probabilities are based on a supplied Pytorch `model`.
     """
+    warnings.warning("deep_discrete_choice_example_data() currently not supported.")
     features = torch.randn(size=(num_choice_sets * num_choices_per_set, num_features)) * (2 ** torch.arange(num_features) + 1).float()
     # for param in model.named_parameters():
     #     print(param)
